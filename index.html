@@ -218,12 +218,98 @@
   }
   footer span { color: var(--green); }
 
+  /* ── RESPONSIVE: TABLET (≤ 900px) ── */
   @media (max-width: 900px) {
     .grid-2        { grid-template-columns: 1fr; }
     .stats-row     { grid-template-columns: 1fr 1fr; }
-    main           { padding: 16px; }
+    main           { padding: 20px 16px; }
     header         { padding: 0 16px; }
-    .nav-wrap      { padding: 0 16px; }
+    .nav-wrap      { padding: 0 12px; }
+    .section-title { font-size: 18px; }
+    .chart-inner       { height: 280px; }
+    .chart-inner.tall  { height: 340px; }
+    .chart-inner.xtall { height: 380px; }
+    .chart-inner.map   { height: 360px; min-height: 300px; }
+  }
+
+  /* ── RESPONSIVE: MOBILE (≤ 640px) ── */
+  @media (max-width: 640px) {
+    /* Header */
+    header {
+      padding: 0 12px;
+      height: 54px;
+      gap: 12px;
+    }
+    .logo-icon { width: 30px; height: 30px; font-size: 15px; }
+    .logo-text { font-size: 13px; }
+    .header-divider { display: none; }
+    .header-subtitle { display: none; }
+    .header-badge {
+      font-size: 9px;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
+
+    /* Nav */
+    .nav-wrap { padding: 0 8px; gap: 0; }
+    .tab {
+      padding: 12px 12px;
+      font-size: 12px;
+      gap: 5px;
+    }
+    /* Show only emoji on very tight screens */
+    .tab span { min-width: 16px; }
+
+    /* Main content */
+    main { padding: 14px 12px; }
+
+    /* Section header */
+    .section-header { margin-bottom: 16px; }
+    .section-title  { font-size: 16px; }
+    .section-desc   { font-size: 12px; }
+
+    /* Stats — 2 cols on mobile, adapt to 1 col on tiny */
+    .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .stat-card  { padding: 14px 14px; }
+    .stat-value { font-size: 20px; }
+    .stat-label { font-size: 11px; }
+
+    /* Filter bar */
+    .filter-bar { gap: 8px; padding: 10px 12px; margin-bottom: 16px; }
+    .filter-chip { padding: 5px 10px; font-size: 11px; }
+
+    /* Graph selector buttons */
+    .graph-selector { gap: 8px; margin-bottom: 14px; }
+    .graph-btn { padding: 7px 12px; font-size: 12px; }
+
+    /* Chart cards */
+    .chart-card    { padding: 14px; border-radius: 12px; }
+    .chart-title   { font-size: 11px; }
+    .chart-subtitle { font-size: 10px; margin-bottom: 10px; }
+
+    /* Chart heights — shorter on mobile */
+    .chart-inner       { height: 240px; }
+    .chart-inner.tall  { height: 280px; }
+    .chart-inner.xtall { height: 320px; }
+    .chart-inner.map   { height: 300px; min-height: 260px; }
+
+    /* Grid */
+    .grid-2 { grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px; }
+    .grid-1 { gap: 14px; margin-bottom: 14px; }
+
+    /* Footer */
+    footer { padding: 20px 16px; font-size: 11px; }
+  }
+
+  /* ── RESPONSIVE: TINY MOBILE (≤ 380px) ── */
+  @media (max-width: 380px) {
+    .stats-row { grid-template-columns: 1fr; }
+    .tab { padding: 10px 8px; font-size: 11px; }
+    .header-badge { display: none; }
+    .chart-inner       { height: 210px; }
+    .chart-inner.tall  { height: 250px; }
+    .chart-inner.xtall { height: 290px; }
+    .chart-inner.map   { height: 260px; min-height: 230px; }
   }
 </style>
 </head>
