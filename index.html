@@ -463,7 +463,20 @@
       layout[ax].linecolor = 'rgba(255,255,255,0.08)';
       layout[ax].tickfont  = { color: '#6b6b80', size: 10 };
     });
-    Plotly.newPlot(divId, spec.data, layout, { responsive: true, displayModeBar: false });
+    const plotlyConfig = { responsive: true, displayModeBar: false };
+    const hasFrames = Array.isArray(spec.frames) && spec.frames.length > 0;
+    if (hasFrames) {
+      // Pass one figure object (data + layout + frames + config). A 3-arg call would
+      // wrongly treat config as layout; see Plotly _doPlot plain-object branch.
+      Plotly.newPlot(divId, {
+        data: spec.data,
+        layout: layout,
+        frames: spec.frames,
+        config: plotlyConfig
+      });
+    } else {
+      Plotly.newPlot(divId, spec.data, layout, plotlyConfig);
+    }
   }
 
   // ── Tab switching ──────────────────────────────
