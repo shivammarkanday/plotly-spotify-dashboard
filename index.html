@@ -194,6 +194,7 @@
   .chart-inner       { width: 100%; height: 320px; }
   .chart-inner.tall  { height: 420px; }
   .chart-inner.xtall { height: 500px; }
+  .chart-inner.map   { height: 480px; min-height: 420px; }
 
   /* GRAPH SELECTOR */
   .graph-selector { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
@@ -252,6 +253,7 @@
   <div class="tab"        onclick="switchTab('audio')"    id="tab-audio">   <span>🎛️</span> Audio Features   </div>
   <div class="tab"        onclick="switchTab('explorer')" id="tab-explorer"><span>🔍</span> Track Explorer   </div>
   <div class="tab"        onclick="switchTab('trends')"   id="tab-trends">  <span>📈</span> Trends           </div>
+  <div class="tab"        onclick="switchTab('world')"  id="tab-world">   <span>🌍</span> World            </div>
 </div>
 
 <main>
@@ -384,6 +386,19 @@
     </div>
   </section>
 
+  <!-- ── WORLD MAP ── -->
+  <section class="section" id="section-world">
+    <div class="section-header">
+      <div class="section-title"><span>#</span> World</div>
+      <div class="section-desc">Average track popularity by country, using regional Spotify genre labels as a proxy (the dataset has no coordinates). Only genres we map to a country appear — many global genres (e.g. rock, pop) are omitted.</div>
+    </div>
+    <div class="chart-card wide">
+      <div class="chart-title">Regional genres → country (choropleth)</div>
+      <div class="chart-subtitle">Darker = higher mean popularity among mapped tracks · Hover for track counts</div>
+      <div class="chart-inner map" id="c-world-map"></div>
+    </div>
+  </section>
+
 </main>
 
 <footer>
@@ -457,12 +472,15 @@
     // Drop embedded Python template to avoid Plotly.py ↔ Plotly.js schema mismatches.
     delete base.template;
     const layout = base;
-    ['xaxis','yaxis'].forEach(ax => {
-      layout[ax] = layout[ax] || {};
-      layout[ax].gridcolor = 'rgba(255,255,255,0.05)';
-      layout[ax].linecolor = 'rgba(255,255,255,0.08)';
-      layout[ax].tickfont  = { color: '#6b6b80', size: 10 };
-    });
+    const isChoropleth = spec.data && spec.data[0] && spec.data[0].type === 'choropleth';
+    if (!isChoropleth) {
+      ['xaxis','yaxis'].forEach(ax => {
+        layout[ax] = layout[ax] || {};
+        layout[ax].gridcolor = 'rgba(255,255,255,0.05)';
+        layout[ax].linecolor = 'rgba(255,255,255,0.08)';
+        layout[ax].tickfont  = { color: '#6b6b80', size: 10 };
+      });
+    }
     const plotlyConfig = { responsive: true, displayModeBar: false };
     const hasFrames = Array.isArray(spec.frames) && spec.frames.length > 0;
     if (hasFrames) {
@@ -504,6 +522,8 @@
     } else if (name === 'trends') {
       renderChart('c-hist-tempo', 'hist_tempo');
       renderChart('c-anim',       'anim_tempo_race');
+    } else if (name === 'world') {
+      renderChart('c-world-map', 'world_map', { height: 460, margin: { t: 10, b: 10, l: 10, r: 30 } });
     }
   }
 

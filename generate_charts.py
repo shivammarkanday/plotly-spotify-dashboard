@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 
 # ── Load your dataset ──────────────────────────────
 _SCRIPT_DIR = Path(__file__).resolve().parent
@@ -154,6 +153,95 @@ fig.update_layout(xaxis_tickangle=-45, template='plotly_dark',
                   paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
                   showlegend=False, margin=dict(t=10, b=80, l=40, r=30))
 charts['anim_tempo_race'] = json.loads(fig.to_json())
+
+# ── World map (genre → country proxy; CSV has no lat/lon) ──
+# Map clearly regional genre names to ISO-3166 alpha-3 for choropleth.
+_GENRE_TO_ISO3 = {
+    "afrobeat": "NGA",
+    "anime": "JPN",
+    "brazil": "BRA",
+    "british": "GBR",
+    "cantopop": "HKG",
+    "chicago-house": "USA",
+    "country": "USA",
+    "dancehall": "JAM",
+    "detroit-techno": "USA",
+    "forro": "BRA",
+    "french": "FRA",
+    "german": "DEU",
+    "honky-tonk": "USA",
+    "indian": "IND",
+    "iranian": "IRN",
+    "j-dance": "JPN",
+    "j-idol": "JPN",
+    "j-pop": "JPN",
+    "j-rock": "JPN",
+    "k-pop": "KOR",
+    "latin": "MEX",
+    "latino": "COL",
+    "malay": "MYS",
+    "mandopop": "CHN",
+    "mpb": "BRA",
+    "pagode": "BRA",
+    "reggae": "JAM",
+    "reggaeton": "COL",
+    "samba": "BRA",
+    "salsa": "COL",
+    "sertanejo": "BRA",
+    "spanish": "ESP",
+    "swedish": "SWE",
+    "tango": "ARG",
+    "turkish": "TUR",
+}
+_df_geo = df[df["track_genre"].isin(_GENRE_TO_ISO3.keys())].copy()
+_df_geo["iso3"] = _df_geo["track_genre"].map(_GENRE_TO_ISO3)
+_geo = (
+    _df_geo.groupby("iso3", as_index=False)
+    .agg(avg_popularity=("popularity", "mean"), tracks=("track_id", "count"))
+    .sort_values("tracks", ascending=False)
+)
+fig = px.choropleth(
+    _geo,
+    locations="iso3",
+    color="avg_popularity",
+    locationmode="ISO-3",
+    hover_data={"tracks": True, "iso3": True},
+    color_continuous_scale="Viridis",
+    labels={
+        "avg_popularity": "Avg popularity",
+        "iso3": "Country (ISO-3)",
+        "tracks": "Tracks (mapped genres)",
+    },
+    title="",
+)
+fig.update_traces(hovertemplate=(
+    "<b>%{location}</b><br>"
+    "Avg popularity: %{z:.1f}<br>"
+    "Tracks: %{customdata[0]}<extra></extra>"
+))
+fig.update_layout(
+    template="plotly_dark",
+    paper_bgcolor="rgba(0,0,0,0)",
+    margin=dict(t=10, b=10, l=10, r=10),
+    coloraxis_colorbar=dict(
+        title=dict(text="Avg popularity", font=dict(size=11)),
+        tickfont=dict(size=10),
+    ),
+)
+fig.update_geos(
+    projection_type="natural earth",
+    showland=True,
+    landcolor="#15151c",
+    showocean=True,
+    oceancolor="#0a0a0f",
+    showcountries=True,
+    countrycolor="rgba(29,185,84,0.25)",
+    coastlinecolor="rgba(120,120,140,0.35)",
+    bgcolor="rgba(0,0,0,0)",
+    lonaxis_range=[-180, 180],
+    lataxis_range=[-60, 85],
+)
+charts["world_map"] = json.loads(fig.to_json())
 
 # ── Stats for header cards ─────────────────────────
 top_genre   = df.groupby('track_genre')['popularity'].mean().idxmax()
