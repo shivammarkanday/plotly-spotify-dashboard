@@ -408,7 +408,7 @@
     showLoadError('❌ Plotly.js did not load',
       'Check your network or ad blockers blocking cdn.plot.ly. Then hard-refresh the page.');
   } else {
-    fetch('charts.json')
+    fetch('/charts.json')
       .then(r => {
         if (!r.ok) throw new Error('charts.json HTTP ' + r.status + ' — run from project folder with python3 -m http.server 8000 and open http://localhost:8000/index.html');
         return r.json();
